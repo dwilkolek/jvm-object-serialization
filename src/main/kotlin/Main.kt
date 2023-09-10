@@ -53,15 +53,14 @@ fun main() {
         }
     }
 
-
-    printHeader("Serialized object size")
-    printResults(results, Process.Compression)
-
     printHeader("Time required to serialize")
     printResults(results, Process.Serialization)
 
     printHeader("Time required to deserialize")
     printResults(results, Process.Deserialization)
+
+    printHeader("Serialized object size")
+    printResults(results, Process.Compression)
 }
 
 enum class Process {
