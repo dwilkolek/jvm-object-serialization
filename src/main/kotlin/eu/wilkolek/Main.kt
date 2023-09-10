@@ -9,8 +9,8 @@ val kryoObjectMapper = KryoObjectMapper()
 val mappers = listOf(javaObjectMapper, kryoObjectMapper)
 
 const val loops = 1000
-const val pad = 20
-val childrenCases = listOf(1, 10, 20, 50, 100, 200, 500, 1_000, 2_000, 5_000, 10_000, 20_000, 50_000)
+const val pad = 25
+val childrenCases = listOf(1, 10, 100, 1_000, 10_000)
 val totalTests = mappers.size * childrenCases.size * 3
 
 
