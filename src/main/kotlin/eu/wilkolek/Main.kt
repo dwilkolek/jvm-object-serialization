@@ -1,5 +1,8 @@
-import java.lang.IllegalStateException
+package eu.wilkolek
+
+import java.lang.ref.WeakReference
 import kotlin.system.measureTimeMillis
+
 
 val javaObjectMapper = JavaObjectMapper()
 val kryoObjectMapper = KryoObjectMapper()
@@ -30,8 +33,8 @@ fun main() {
                 )
             )
             printProgress(results)
-
             results.add(
+
                 TestResult(
                     Process.Serialization,
                     mapper.name,
@@ -125,6 +128,7 @@ fun verifyMapper(mapper: ObjectMapper) {
 
 
 fun ObjectMapper.measureSerialization(testCase: Human?): Long {
+    forceGC()
     return measureTimeMillis {
         (0 until loops).forEach { _ ->
             this.toBytea(testCase)
@@ -134,9 +138,19 @@ fun ObjectMapper.measureSerialization(testCase: Human?): Long {
 
 
 fun ObjectMapper.measureDeserialization(testCaseBytes: ByteArray?): Long {
+    forceGC()
     return measureTimeMillis {
         (0 until loops).forEach { _ ->
             this.fromBytea(testCaseBytes)
         }
+    }
+}
+
+fun forceGC() {
+    var obj: Any? = Any()
+    val ref: WeakReference<*> = WeakReference(obj)
+    obj = null
+    while (ref.get() != null) {
+        System.gc()
     }
 }

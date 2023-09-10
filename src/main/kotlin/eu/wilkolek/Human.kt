@@ -1,3 +1,5 @@
+package eu.wilkolek
+
 import java.io.Serializable
 import java.time.LocalDate
 import java.util.UUID
@@ -10,7 +12,7 @@ data class Human(val name: String, val age: Int, val dateOfBirth: LocalDate, val
 
 
 fun generate(children: Int = 0): Human {
-    return Human("Human ${UUID.randomUUID()}",
+    return Human("eu.wilkolek.Human ${UUID.randomUUID()}",
         Random.nextInt(),
         LocalDate.of(Random.nextInt(2000, 2022), Random.nextInt(1, 10), Random.nextInt(1, 10)),
         (0 until children).map { generate() }
