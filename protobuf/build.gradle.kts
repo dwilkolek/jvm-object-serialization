@@ -23,16 +23,5 @@ protobuf{
     }
     // default proto plugin generate stub in build folder
     // change the stub generate folder
-     generatedFilesBaseDir = "$projectDir/src/generated"
+    //  generatedFilesBaseDir = "$projectDir/src/generated"
 }
-
-//sourceSets {
-//    main {
-//        proto {
-//            println(srcDirs)
-//        }
-//        java {
-//            srcDirs.add(File("build/generated/source/proto/main/java"))
-//        }
-//    }
-//}
