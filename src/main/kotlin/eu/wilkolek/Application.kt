@@ -1,69 +1,84 @@
 package eu.wilkolek
 
+import org.springframework.boot.CommandLineRunner
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
+import org.springframework.stereotype.Component
 import java.lang.ref.WeakReference
 import kotlin.system.measureTimeMillis
 
-
 val javaObjectMapper = JavaObjectMapper()
 val kryoObjectMapper = KryoObjectMapper()
-val mappers = listOf(javaObjectMapper, kryoObjectMapper)
+val gRPCObjectMapper = GRPCObjectMapper()
+val mappers = listOf(javaObjectMapper, kryoObjectMapper, gRPCObjectMapper)
 
 const val loops = 1000
 const val pad = 25
 val childrenCases = listOf(1, 10, 100, 1_000, 10_000)
 val totalTests = mappers.size * childrenCases.size * 3
 
+@SpringBootApplication
+class Application
+
 
 fun main() {
-    mappers.forEach { mapper -> verifyMapper(mapper) }
-    val results = mutableListOf<TestResult>()
-    val childrenTestCases = childrenCases.associateWith {
-        generate(it - 1)
-    }
-    mappers.map { mapper ->
-        childrenTestCases.forEach { case ->
-            val testCaseBytes = mapper.toBytea(case.value)
+    runApplication<Application>()
+}
 
-            results.add(
-                TestResult(
-                    Process.Compression,
-                    mapper.name,
-                    case.key,
-                    testCaseBytes?.size?.toLong() ?: -1L
-                )
-            )
-            printProgress(results)
-            results.add(
-
-                TestResult(
-                    Process.Serialization,
-                    mapper.name,
-                    case.key,
-                    mapper.measureSerialization(case.value)
-                )
-            )
-            printProgress(results)
-
-            results.add(
-                TestResult(
-                    Process.Deserialization,
-                    mapper.name,
-                    case.key,
-                    mapper.measureDeserialization(testCaseBytes)
-                )
-            )
-            printProgress(results)
+@Component
+class SerializationJob: CommandLineRunner {
+    override fun run(vararg args: String?) {
+        mappers.forEach { mapper -> verifyMapper(mapper) }
+        val results = mutableListOf<TestResult>()
+        val childrenTestCases = childrenCases.associateWith {
+            generate(it - 1)
         }
+        mappers.map { mapper ->
+            childrenTestCases.forEach { case ->
+                val testCaseBytes = mapper.toBytea(case.value)
+
+                results.add(
+                    TestResult(
+                        Process.Compression,
+                        mapper.name,
+                        case.key,
+                        testCaseBytes?.size?.toLong() ?: -1L
+                    )
+                )
+                printProgress(results)
+                results.add(
+
+                    TestResult(
+                        Process.Serialization,
+                        mapper.name,
+                        case.key,
+                        mapper.measureSerialization(case.value)
+                    )
+                )
+                printProgress(results)
+
+                results.add(
+                    TestResult(
+                        Process.Deserialization,
+                        mapper.name,
+                        case.key,
+                        mapper.measureDeserialization(testCaseBytes)
+                    )
+                )
+                printProgress(results)
+            }
+        }
+
+        printHeader("Time required to serialize")
+        printResults(results, Process.Serialization)
+
+        printHeader("Time required to deserialize")
+        printResults(results, Process.Deserialization)
+
+        printHeader("Serialized object size")
+        printResults(results, Process.Compression)
     }
 
-    printHeader("Time required to serialize")
-    printResults(results, Process.Serialization)
-
-    printHeader("Time required to deserialize")
-    printResults(results, Process.Deserialization)
-
-    printHeader("Serialized object size")
-    printResults(results, Process.Compression)
 }
 
 enum class Process {

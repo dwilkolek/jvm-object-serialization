@@ -1,0 +1,13 @@
+syntax = "proto3";
+package eu.wilkolek.protobuf;
+
+option java_package = "eu.wilkolek.protobuf";
+option java_multiple_files = true;
+
+import "google/protobuf/timestamp.proto";
+message HumanMessage {
+  string name = 1;
+  int32 age = 2;
+  google.protobuf.Timestamp dateOfBirth = 3;
+  repeated HumanMessage children = 4;
+}
