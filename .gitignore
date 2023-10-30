@@ -3,3 +3,4 @@
 build
 /gradle/
 **/eu/wilkolek/generated/
+.DS_Store
